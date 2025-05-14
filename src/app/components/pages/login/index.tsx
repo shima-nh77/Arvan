@@ -12,7 +12,6 @@ export const Login = () => {
 
   useEffect(() => {
     const token = cookieManager.getToken();
-    console.log(token);
     if (token) {
       navigate("/articles");
     }
