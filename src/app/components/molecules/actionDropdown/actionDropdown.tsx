@@ -1,6 +1,6 @@
 import { Button } from "../../atoms/button/button";
 import { Dropdown } from "antd";
-import { MoreIcon } from "../../icons/icons";
+import { MoreIcon } from "../../../icons/icons";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "../../templates/modal/modal";

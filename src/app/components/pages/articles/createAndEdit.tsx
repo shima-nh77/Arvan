@@ -1,4 +1,4 @@
-import { Form } from "antd";
+import { Form, Input as antInput } from "antd";
 import { MainLayout } from "../../templates/mainLayout/mainLayout";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -128,10 +128,11 @@ export const CreateEditArticle = () => {
               label="Title"
               rules={[{ required: true, message: "Title is required" }]}
               className="mb-3"
+              validateStatus={form.getFieldError("title").length > 0 ? "error" : ""}
             >
               <Input
                 placeholder="Title"
-                className="h-10 w-full"
+                className={`h-10 w-full ${form.getFieldError("title").length > 0 ? "!border-red-100" : ""}`}
                 containerClassName="mb-2"
               />
             </Form.Item>
@@ -141,10 +142,11 @@ export const CreateEditArticle = () => {
               label="Description"
               rules={[{ required: true, message: "Description is required" }]}
               className="mb-3"
+              validateStatus={form.getFieldError("description").length > 0 ? "error" : ""}
             >
               <Input
                 placeholder="Description"
-                className="h-10"
+                className={`h-10 ${form.getFieldError("description").length > 0 ? "!border-red-100" : ""}`}
                 containerClassName="mb-2"
               />
             </Form.Item>
@@ -154,12 +156,10 @@ export const CreateEditArticle = () => {
               label="Body"
               rules={[{ required: true, message: "Body is required" }]}
               className="mb-3"
+              validateStatus={form.getFieldError("body").length > 0 ? "error" : ""}
             >
-              <Input
-                type="textarea"
-                className="min-h-[200px] !align-top dddddd"
-                containerClassName="mb-2"
-                style={{ verticalAlign: "top" }}
+              <antInput.TextArea 
+                className={`!min-h-48 mb-2 !border-neutral-100 ${form.getFieldError("body").length > 0 ? "!border-red-100" : ""}`}
               />
             </Form.Item>
 
@@ -193,7 +193,7 @@ export const CreateEditArticle = () => {
               />
             ))}
           </div>
-          {tags.length > 0 && (
+          {tags?.length > 0 && (
             <div className="mt-4">
               <p className="text-sm text-neutral-200 mb-2">Custom Tags</p>
               <div className="flex flex-wrap gap-2">

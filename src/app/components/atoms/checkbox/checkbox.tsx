@@ -1,4 +1,4 @@
-import { TickIcon } from "../../icons/icons";
+import { CheckOutlined } from "@ant-design/icons";
 import { CheckboxProps } from "./checkbox.types";
 
 export const Checkbox = ({ label, checked, onChange }: CheckboxProps) => {
@@ -19,7 +19,9 @@ export const Checkbox = ({ label, checked, onChange }: CheckboxProps) => {
               : "border-neutral-400 bg-white"
           }`}
         >
-          {checked && <TickIcon width={8} height={8} fill="white" />}
+          {checked && (
+            <CheckOutlined style={{ fontSize: "10px", color: "white" }} />
+          )}
         </div>
       </div>
       <span className="text-sm text-neutral-200">{label}</span>

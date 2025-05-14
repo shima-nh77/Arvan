@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MainLayout } from "../../templates/mainLayout/mainLayout";
 import { ActionDropdown } from "../../molecules/actionDropdown/actionDropdown";
 import "../../../styles/paginationStyle.css";
-import { ChevronLeftIcon, ChevronRightIcon } from "../../icons/icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "../../../icons/icons";
 import { useGetArticles } from "../../../../api/articles/articlesApis";
 
 export const Articles = () => {

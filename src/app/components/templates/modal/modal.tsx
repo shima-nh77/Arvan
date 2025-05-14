@@ -1,7 +1,7 @@
 import { Modal as AntModal } from "antd";
 import { Button } from "../../atoms/button/button";
 import { ModalProps } from "./modal.types";
-import { TickCircleOutlineIcon, WarningIcon } from "../../icons/icons";
+import { TickCircleOutlineIcon, WarningIcon } from "../../../icons/icons";
 
 export const Modal = ({
   isOpen,
