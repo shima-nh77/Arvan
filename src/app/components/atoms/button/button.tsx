@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { ButtonProps, State } from "./button.types";
 import { Size } from "../../types/size.type";
-import { Loading } from "../loading/loading";
 import { Variant } from "../../types/variant.type";
+import { Spin } from "antd";
 
 const sizeClasses: Record<Size, string> = {
   small: "px-3 py-1 text-sm",
@@ -15,20 +15,20 @@ const variantClasses: Record<Variant, Record<State, string>> = {
     default: "bg-teal-100 text-white",
     hover: "bg-teal-200 text-white",
     loading: "bg-teal-100 text-white opacity-75",
-    disabled: "bg-teal-50 text-white cursor-not-allowed",
+    disabled: "bg-teal-50 text-white cursor-not-allowed opacity-50", // Added opacity
   },
   danger: {
     default: "bg-red-100 text-white",
     hover: "bg-red-200 text-white",
     loading: "bg-red-100 text-white opacity-75",
-    disabled: "bg-red-50 text-white cursor-not-allowed",
+    disabled: "bg-red-50 text-white cursor-not-allowed opacity-50", // Added opacity
   },
   outline: {
     default: "bg-white text-black border border-neutral-100",
     hover: "text-black border border-neutral-100",
     loading: "bg-white text-neutral-100 border border-neutral-100",
     disabled:
-      "bg-white text-neutral-100 border border-neutral-100 cursor-not-allowed",
+      "bg-white text-neutral-100 border border-neutral-100 cursor-not-allowed opacity-50", // Added opacity
   },
 };
 
@@ -37,7 +37,6 @@ export const Button: React.FC<ButtonProps> = ({
   size = "medium",
   isDisabled = false,
   isLoading = false,
-  loadingType = "spinner",
   type = "button",
   children,
   className,
@@ -51,15 +50,24 @@ export const Button: React.FC<ButtonProps> = ({
   } else {
     state = "default";
   }
+  if (isDisabled || isLoading) {
+    state = isLoading ? "loading" : "disabled";
+  }
   const classes = classNames(
     "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none",
     variantClasses[variant][state],
     sizeClasses[size],
     className
   );
+
   return (
-    <button type={type} disabled={isDisabled} className={classes} {...rest}>
-      {isLoading ? <Loading type={loadingType} /> : children}
+    <button
+      type={type}
+      disabled={isDisabled || isLoading}
+      className={classes}
+      {...rest}
+    >
+      {isLoading ? <Spin size="small" className="!text-white [&_.ant-spin-dot]:!text-black"  /> : children}
     </button>
   );
 };

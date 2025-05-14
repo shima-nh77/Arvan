@@ -23,7 +23,7 @@ export const routes = [
     element: <CreateEditArticle />,
   },
   {
-    path: "/articles/:slug/edit",
+    path: "/articles/:slug",
     element: <CreateEditArticle />,
   },
 ];

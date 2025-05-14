@@ -1,12 +1,17 @@
-import { Form, Tag } from "antd";
+import { Form } from "antd";
 import { MainLayout } from "../../templates/mainLayout/mainLayout";
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Input } from "../../atoms/input/input";
 import { Button } from "../../atoms/button/button";
 import { Checkbox } from "../../atoms/checkbox/checkbox";
 import { showToast } from "../../../../utility/toast";
-import { Modal } from "../../templates/modal/modal";
+import {
+  useCreateArticle,
+  useEditArticle,
+  useGetArticlesByAuthor,
+} from "../../../../api/articles/articlesApis";
+import { useGetTags } from "../../../../api/tag/tagApis";
 
 interface ArticleForm {
   title: string;
@@ -17,138 +22,197 @@ interface ArticleForm {
 
 export const CreateEditArticle = () => {
   const { slug } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [form] = Form.useForm<ArticleForm>();
-  const [tags, setTags] = useState<string[]>([]);
-  const [inputTag, setInputTag] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [availableTags] = useState([
-    "Tag 1",
-    "Tag 2",
-    "Tag 3",
-    "Tag 4",
-    "Tag 5",
-    "Tag 6",
-    "Tag 7",
-    "Tag 8",
-    "Tag 9",
-    "Tag 10",
-  ]);
+  const [inputTag, setInputTag] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const { data: allTags } = useGetTags();
+  const author = searchParams.get("author");
+  const { mutate: mutateEditArticle, isPending: pendingEditArticle } =
+    useEditArticle();
+  const { mutate: mutateCreateArticle, isPending: pendingCreateArticle } =
+    useCreateArticle();
+  const { data: articleData } = useGetArticlesByAuthor(author || "");
 
-  const handleTagToggle = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-  };
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputTag.trim()) {
-      e.preventDefault();
-      if (!tags.includes(inputTag.trim())) {
-        setTags((prev) => [...prev, inputTag.trim()]);
-        setInputTag("");
-      }
+  const handleTagSelect = (tag: string, checked: boolean) => {
+    if (checked) {
+      setSelectedTags((prev) => [...prev, tag]);
+    } else {
+      setSelectedTags((prev) => prev.filter((t) => t !== tag));
     }
   };
 
-  const handleRemoveTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag));
+  const handleOnSubmit = (values: ArticleForm) => {
+    if (slug) {
+      mutateEditArticle(
+        {
+          slug: slug!,
+          data: {
+            body: values.body,
+          },
+        },
+        {
+          onSuccess: () => {
+            showToast.success({
+              title: "Well done",
+              description: "Article updated successfully",
+            });
+            navigate("/articles");
+          },
+          onError: () => {
+            showToast.error({
+              title: "Error",
+              description: "Failed to update article",
+            });
+          },
+        }
+      );
+    } else {
+      mutateCreateArticle(
+        {
+          title: values.title,
+          description: values.description,
+          body: values.body,
+          tagList: [...tags, ...selectedTags],
+        },
+        {
+          onSuccess: () => {
+            showToast.success({
+              title: "Well done",
+              description: "Article created successfuly",
+            });
+            navigate("/articles");
+          },
+          onError: () => {
+            showToast.error({
+              title: "Error",
+              description: "Failed to create article",
+            });
+          },
+        }
+      );
+    }
   };
 
-  const onFinish = (values: ArticleForm) => {
-    const payload = {
-      ...values,
-      tagList: tags,
-    };
-    console.log(payload);
-    // Handle API call here
-  };
+  useEffect(() => {
+    if (articleData) {
+      form.setFieldsValue({
+        title: articleData?.articles?.[0]?.title,
+        description: articleData?.articles?.[0]?.description,
+        body: articleData?.articles?.[0]?.body,
+      });
+      if (articleData?.articles?.[0]?.tagList) {
+        setSelectedTags(articleData.articles[0].tagList);
+      }
+    }
+  }, [articleData]);
 
   return (
-    <MainLayout className="">
+    <MainLayout className="pt-16 !bg-transparent">
       <div className="flex flex-row w-full">
-        <div className="bg-white px-6 py-9 rounded-lg w-3/4 m-6">
+        <div className="bg-white px-6 py-9 rounded-lg w-3/4 mx-6 ">
           <p className="text-lg font-semibold mb-9">
             {slug ? "Edit Article" : "New Article"}
           </p>
           <Form
             form={form}
             layout="vertical"
-            onFinish={onFinish}
+            onFinish={handleOnSubmit}
+            requiredMark={false}
             className="w-full"
           >
-            <Input
-              placeholder="Title"
-              className="h-10cw-full"
-              containerClassName="mb-6"
-              label="Title"
+            <Form.Item
               name="title"
-              required
-            />
+              label="Title"
+              rules={[{ required: true, message: "Title is required" }]}
+              className="mb-3"
+            >
+              <Input
+                placeholder="Title"
+                className="h-10 w-full"
+                containerClassName="mb-2"
+              />
+            </Form.Item>
 
-            <Input
-              placeholder="Description"
-              className="h-10"
-              label="Description"
+            <Form.Item
               name="description"
-              containerClassName="mb-6"
-              required
-            />
+              label="Description"
+              rules={[{ required: true, message: "Description is required" }]}
+              className="mb-3"
+            >
+              <Input
+                placeholder="Description"
+                className="h-10"
+                containerClassName="mb-2"
+              />
+            </Form.Item>
 
-            <Input
-              containerClassName="mb-6"
-              type="textarea"
-              className="min-h-[200px]"
-              required
+            <Form.Item
               name="body"
               label="Body"
-            />
+              rules={[{ required: true, message: "Body is required" }]}
+              className="mb-3"
+            >
+              <Input
+                type="textarea"
+                className="min-h-[200px] !align-top dddddd"
+                containerClassName="mb-2"
+                style={{ verticalAlign: "top" }}
+              />
+            </Form.Item>
 
-            <div className="flex justify-start">
-              <Button type="submit" variant="primary">
-                submit
+            <Form.Item>
+              <Button
+                type="submit"
+                variant="primary"
+                isDisabled={pendingEditArticle || pendingCreateArticle}
+                isLoading={pendingEditArticle || pendingCreateArticle}
+              >
+                {slug ? "Update" : "Submit"}
               </Button>
-            </div>
+            </Form.Item>
           </Form>
         </div>
-        <div className="bg-white w-1/4 m-6 p-6 rounded-lg h-fit">
+        <div className="bg-white w-full lg:w-1/4 px-4 sm:px-6 py-6 rounded-lg h-fit">
           <p className="text-sm text-neutral-200 mb-2">Tags</p>
           <Input
-            containerClassName="mb-4 !rounded-xl"
+            containerClassName="mb-4"
             placeholder="New Tag"
             value={inputTag}
             onChange={(e) => setInputTag(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onClick={() =>
-              //   showToast.error({
-              //     title: "failed",
-              //     description: "Operation completed successfully",
-              //   })
-              setIsModalOpen(true)
-            }
           />
-          <div className="flex flex-col gap-y-2 border border-neutral-100 rounded-md p-4">
-            {availableTags.map((tag) => (
+          <div className="flex flex-col gap-y-2 border border-neutral-100 rounded-md p-4 max-h-[300px] overflow-y-auto">
+            {allTags?.tags?.map((tag: string) => (
               <Checkbox
                 key={tag}
                 label={tag}
                 checked={selectedTags.includes(tag)}
-                onChange={() => handleTagToggle(tag)}
+                onChange={(checked: boolean) => handleTagSelect(tag, checked)}
               />
             ))}
           </div>
+          {tags.length > 0 && (
+            <div className="mt-4">
+              <p className="text-sm text-neutral-200 mb-2">Custom Tags</p>
+              <div className="flex flex-wrap gap-2">
+                {tags?.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-2 py-1 bg-blue-50 text-teal-100 rounded-md text-sm cursor-pointer"
+                    onClick={() =>
+                      setTags((prev) => prev.filter((t) => t !== tag))
+                    }
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      {/* <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Confirmation"
-        onOk={() => setIsModalOpen(false)}
-        okText="Confirm"
-        cancelText="Cancel"
-      >
-        <p>Are you sure you want to proceed?</p>
-      </Modal> */}
     </MainLayout>
   );
 };

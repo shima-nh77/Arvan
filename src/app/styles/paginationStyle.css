@@ -1,9 +1,25 @@
+/* Table Header Styles */
+.ant-table-thead .ant-table-cell {
+  background-color: #e6e6e6 !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+}
+
+.ant-table-thead .ant-table-cell::before {
+  content: none !important;
+}
+
+/* Pagination Container Styles */
 .ant-pagination {
+  border: 1px solid #cccccc !important;
+  width: fit-content !important;
+  float: right !important;
+  border-radius: 8px !important;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  padding: 1rem 0;
+  padding: 2px 0;
 }
 
 .ant-pagination-item {
@@ -21,6 +37,7 @@
   background-color: #009595 !important;
   color: white !important;
   border-color: #009595 !important;
+  border-radius: 8px !important;
 }
 
 .ant-pagination-item-active a {

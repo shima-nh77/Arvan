@@ -19,7 +19,7 @@ export const Checkbox = ({ label, checked, onChange }: CheckboxProps) => {
               : "border-neutral-400 bg-white"
           }`}
         >
-          {checked && <TickIcon width={8} height={8} />}
+          {checked && <TickIcon width={8} height={8} fill="white" />}
         </div>
       </div>
       <span className="text-sm text-neutral-200">{label}</span>

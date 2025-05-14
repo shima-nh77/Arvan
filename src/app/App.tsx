@@ -8,14 +8,14 @@ import {
   QueryCache,
 } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
-import './styles/toastStyle.css';
+import "react-toastify/dist/ReactToastify.css";
+import "./styles/toastStyle.css";
+import { cookieManager } from "../utility/cookieManager";
+
 function App() {
   const handleLogout = () => {
-    // Cookies.remove("token");
-    // request.setToken(null);
-    // legacyRequest.setToken(null);
-    // logout();
+    cookieManager?.removeToken();
+    window.location.href = "/login";
   };
 
   const [queryClient] = useState(
@@ -48,7 +48,7 @@ function App() {
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AppRoutes />
-          <ToastContainer />
+        <ToastContainer />
       </QueryClientProvider>
     </BrowserRouter>
   );

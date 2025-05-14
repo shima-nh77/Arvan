@@ -21,6 +21,8 @@ export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps) => {
           form={form}
           onFinish={handleSubmit}
           layout="vertical"
+          requiredMark={false}
+          validateTrigger={["onBlur", "onChange"]}
           className="p-6"
         >
           {mode === "register" && (
@@ -28,10 +30,18 @@ export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps) => {
               label="Username"
               name="username"
               rules={[{ required: true, message: "Required field" }]}
+              validateStatus={
+                form.getFieldError("username").length > 0 ? "error" : ""
+              }
             >
-              <Input 
+              <Input
                 containerClassName="mb-0"
                 placeholder="Username"
+                className={
+                  form.getFieldError("username").length > 0
+                    ? "!border-red-100"
+                    : ""
+                }
               />
             </Form.Item>
           )}
@@ -41,34 +51,49 @@ export const AuthForm = ({ mode, onSubmit, isLoading }: AuthFormProps) => {
             name="email"
             rules={[
               { required: true, message: "Required field" },
-              { type: "email", message: "Invalid email format" }
+              { type: "email", message: "Invalid email format" },
             ]}
+            validateStatus={
+              form.getFieldError("email").length > 0 ? "error" : ""
+            }
           >
-            <Input 
+            <Input
               containerClassName="mb-0"
               type="email"
               placeholder="Email"
+              className={
+                form.getFieldError("email").length > 0 ? "!border-red-100" : ""
+              }
             />
           </Form.Item>
 
           <Form.Item
             label="Password"
             name="password"
+            className="!mb-2"
             rules={[{ required: true, message: "Required field" }]}
-            className="mb-6"
+            validateStatus={
+              form.getFieldError("password").length > 0 ? "error" : ""
+            }
           >
-            <Input 
+            <Input
               containerClassName="mb-0"
               type="password"
               placeholder="Password"
+              className={
+                form.getFieldError("password").length > 0
+                  ? "!border-red-100"
+                  : ""
+              }
             />
           </Form.Item>
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full mt-6"
             variant="primary"
             disabled={isLoading}
+            isLoading={isLoading}
           >
             {mode === "login" ? "Sign in" : "Sign up"}
           </Button>

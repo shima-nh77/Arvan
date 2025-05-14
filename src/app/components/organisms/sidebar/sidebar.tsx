@@ -7,25 +7,29 @@ export const Sidebar = () => {
   const navigate = useNavigate();
 
   const getItemClassName = (path: string) => {
-    const isActive = path === '/articles' 
-      ? location.pathname.startsWith('/articles') && location.pathname !== '/articles/create'
-      : location.pathname === path;
+    const isActive =
+      path === "/articles"
+        ? location.pathname === "/articles" ||
+          location.pathname.includes("/articles/page")
+        : path === "/create"
+        ? location.pathname === "/create" ||
+          (location.pathname.startsWith("/articles/") &&
+            !location.pathname.includes("page"))
+        : location.pathname === path;
 
-    return isActive 
-      ? '!text-teal-100 !bg-blue-50' 
-      : 'text-gray-600 hover:text-blue-500 hover:bg-blue-50';
+    return isActive ? "!text-teal-100 !bg-blue-50" : "text-gray-600";
   };
 
   const items = [
     {
       key: "/articles",
       label: "All Articles",
-      className: getItemClassName("/articles")
+      className: getItemClassName("/articles"),
     },
     {
       key: "/articles/create",
       label: "New Article",
-      className: getItemClassName("/articles/create")
+      className: getItemClassName("/create"),
     },
   ];
 

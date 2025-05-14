@@ -11,7 +11,7 @@ export const MainLayout = ({ children, className = "" }: MainLayoutProps) => {
       <Layout className={`min-h-screen ${className}`}>
         <Sidebar />
 
-        <div className="w-full">{children}</div>
+        <div className="w-full p-6">{children}</div>
       </Layout>
     </>
   );

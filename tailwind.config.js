@@ -19,6 +19,7 @@ module.exports = {
         100: "#D61E20",
         200: "#AB181A",
         300: "#801213",
+        400:'#FAE4E4'
       },
       neutral: {
         50: "#F0F0F0",
@@ -27,6 +28,9 @@ module.exports = {
         300: "#E6E6E6",
         400: "#7F7F7F",
       },
+      green:{
+        50:'#E3F6E9'
+      }
     },
   },
   plugins: [],

@@ -1,35 +1,54 @@
 import { useNavigate } from "react-router-dom";
-import { useLogin } from "../../../../api/generated/user-and-authentication/user-and-authentication";
 import { AuthForm } from "../../organisms/authForm/authForm";
+import { useEffect } from "react";
+import { cookieManager } from "../../../../utility/cookieManager";
+import { login } from "../../../../api/auth/auth.rq";
+import { FormValues } from "../../organisms/authForm/authForm.types";
+import { showToast } from "../../../../utility/toast";
+import { useLogin } from "../../../../api/auth/authApis";
 
 export const Login = () => {
   const navigate = useNavigate();
-  const { mutate: login, status } = useLogin();
-  const isLoading = status === "pending";
+  const { mutate: mutateLogin, isPending: loginPending } = useLogin();
 
-  const handleSubmit = (formData: any) => {
-    login(
+  useEffect(() => {
+    const token = cookieManager.getToken();
+    console.log(token);
+    if (token) {
+      navigate("/articles");
+    }
+  }, [navigate]);
+
+  const handleSubmit = (formData: FormValues) => {
+    mutateLogin(
       {
-        data: {
-          user: {
-            email: formData.email,
-            password: formData.password,
-          },
+        user: {
+          email: formData?.email,
+          password: formData?.password,
         },
       },
       {
-        onSuccess: (response) => {
-          localStorage.setItem("token", response.data.user.token);
-          navigate("/");
+        onSuccess: (response: any) => {
+          if (response?.user?.token) {
+            cookieManager.setToken(response?.user?.token);
+            showToast.success({
+              title: "Success!",
+              description: "Login successfully",
+            });
+            navigate("/articles");
+          }
         },
-        onError: (error) => {
-          console.error("Login failed:", error);
+        onError: () => {
+          showToast.error({
+            title: "Sign-in Failed!",
+            description: "Username and/or Password is invalid",
+          });
         },
       }
     );
   };
 
   return (
-    <AuthForm mode="login" onSubmit={handleSubmit} isLoading={isLoading} />
+    <AuthForm mode="login" onSubmit={handleSubmit} isLoading={loginPending} />
   );
 };

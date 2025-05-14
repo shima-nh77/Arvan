@@ -1,13 +1,13 @@
 import { toast, ToastOptions } from "react-toastify";
 
 interface ToastMessage {
-  title: string;
+  title?: string;
   description: string;
 }
 
 const toastConfig: ToastOptions = {
   position: "top-center",
-  autoClose: 10000,
+  autoClose: 2000,
   hideProgressBar: true,
   closeOnClick: true,
   pauseOnHover: true,
@@ -22,8 +22,8 @@ export const showToast = {
   success: ({ title, description }: ToastMessage) =>
     toast.success(
       <div>
-        <span className="toast-title">{title}</span>
-        <span className="toast-description toast-description--success">
+        {title && <span className="toast-title">{title}</span>}
+        <span className="toast-description toast-description--success ml-1">
           {description}
         </span>
       </div>,
@@ -32,8 +32,10 @@ export const showToast = {
   error: ({ title, description }: ToastMessage) =>
     toast.error(
       <div>
-        <span className="toast-title toast-title--error">{title}</span>
-        <span className="toast-description toast-description--error">
+        {title && (
+          <span className="toast-title toast-title--error">{title}!</span>
+        )}
+        <span className="toast-description toast-description--error ml-1">
           {description}
         </span>
       </div>,

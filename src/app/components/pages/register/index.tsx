@@ -1,36 +1,50 @@
 import { useNavigate } from "react-router-dom";
-import { useCreateUser } from "../../../../api/generated/user-and-authentication/user-and-authentication";
 import { AuthForm } from "../../organisms/authForm/authForm";
+import { useRegister } from "../../../../api/auth/authApis";
+import { FormValues } from "../../organisms/authForm/authForm.types";
+import { showToast } from "../../../../utility/toast";
+import { cookieManager } from "../../../../utility/cookieManager";
 
 export const Register = () => {
   const navigate = useNavigate();
-  const { mutate: register, status } = useCreateUser();
-  const isLoading = status === "pending";
-  // Extend the UseMutationResult type to include isLoading
-  const handleSubmit = (formData: any) => {
-    register(
+  const { mutate: mutateUserRegister, isPending: registerPending } =
+    useRegister();
+  const handleSubmit = (formData: FormValues) => {
+    mutateUserRegister(
       {
-        data: {
-          user: {
-            username: formData.username,
-            email: formData.email,
-            password: formData.password,
-          },
+        user: {
+          username: formData.username || "",
+          email: formData.email,
+          password: formData.password,
         },
       },
       {
-        onSuccess: (response) => {
-          localStorage.setItem("token", response.data.user.token);
-          navigate("/");
+        onSuccess: (response: any) => {
+          if (response.user?.token) {
+            cookieManager.setToken(response.user.token);
+          }
+
+          showToast.success({
+            title: "Success",
+            description: "Registration successfully",
+          });
+          navigate("/login");
         },
-        onError: (error) => {
-          console.error("Registration failed:", error);
+        onError: () => {
+          showToast.error({
+            title: "Error",
+            description: "Registration failed",
+          });
         },
       }
     );
   };
 
   return (
-    <AuthForm mode="register" onSubmit={handleSubmit} isLoading={isLoading} />
+    <AuthForm
+      mode="register"
+      onSubmit={handleSubmit}
+      isLoading={registerPending}
+    />
   );
 };
