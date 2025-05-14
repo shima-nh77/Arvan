@@ -45,6 +45,6 @@ export const useGetArticlesByAuthor = (author: string) => {
   return useQuery({
     queryKey: ["articlesByAuthor", author],
     queryFn: () => getArticlesByAuthor(author),
-    // enabled: !!author,
+    enabled: !!author,
   });
 };

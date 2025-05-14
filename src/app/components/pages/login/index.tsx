@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { AuthForm } from "../../organisms/authForm/authForm";
 import { useEffect } from "react";
 import { cookieManager } from "../../../../utility/cookieManager";
-import { login } from "../../../../api/auth/auth.rq";
 import { FormValues } from "../../organisms/authForm/authForm.types";
 import { showToast } from "../../../../utility/toast";
 import { useLogin } from "../../../../api/auth/authApis";

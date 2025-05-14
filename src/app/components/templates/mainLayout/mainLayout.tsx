@@ -4,7 +4,6 @@ import { Header } from "../../organisms/header/header";
 import { Sidebar } from "../../organisms/sidebar/sidebar";
 
 export const MainLayout = ({ children, className = "" }: MainLayoutProps) => {
-  const { Content } = Layout;
   return (
     <>
       <Header />

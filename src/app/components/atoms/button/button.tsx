@@ -1,7 +1,5 @@
 import classNames from "classnames";
-import { ButtonProps, State } from "./button.types";
-import { Size } from "../../types/size.type";
-import { Variant } from "../../types/variant.type";
+import { ButtonProps, Size, State, Variant } from "./button.types";
 import { Spin } from "antd";
 
 const sizeClasses: Record<Size, string> = {
@@ -67,7 +65,14 @@ export const Button: React.FC<ButtonProps> = ({
       className={classes}
       {...rest}
     >
-      {isLoading ? <Spin size="small" className="!text-white [&_.ant-spin-dot]:!text-black"  /> : children}
+      {isLoading ? (
+        <Spin
+          size="small"
+          className="!text-white [&_.ant-spin-dot]:!text-black"
+        />
+      ) : (
+        children
+      )}
     </button>
   );
 };
